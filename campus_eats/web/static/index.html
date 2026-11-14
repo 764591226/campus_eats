@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>今天吃什么 · 校园决策助手</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🍜</div>
+      <div>
+        <h1>今天吃什么</h1>
+        <p>校园决策助手 · 把选择困难交给转盘</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="active" href="/">抽签</a>
+      <a href="#vote-panel">发起投票</a>
+      <a href="/admin">管理后台</a>
+    </nav>
+  </header>
+
+  <main class="page grid-main">
+    <section class="card panel-filters">
+      <div class="section-head">
+        <h2>设条件</h2>
+        <span class="hint">都是可选的</span>
+      </div>
+
+      <div class="field">
+        <label for="campus">校区</label>
+        <select id="campus"></select>
+      </div>
+
+      <div class="field">
+        <label for="mealPeriod">时段</label>
+        <select id="mealPeriod">
+          <option value="">不限</option>
+          <option value="BREAKFAST">早餐</option>
+          <option value="LUNCH">午餐</option>
+          <option value="DINNER">晚餐</option>
+          <option value="LATE_NIGHT">夜宵</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="budget">人均预算</label>
+        <select id="budget">
+          <option value="">不限</option>
+          <option value="1000">¥10 以内</option>
+          <option value="1500">¥15 以内</option>
+          <option value="2000">¥20 以内</option>
+          <option value="2500">¥25 以内</option>
+          <option value="3000">¥30 以内</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <span class="field-label">想吃（可多选）</span>
+        <div class="chips" id="tagChips"></div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="excludeSpicy" checked> 不吃辣</label>
+      <label class="check"><input type="checkbox" id="avoidRecent" checked> 跳过最近 7 天吃过的</label>
+
+      <button class="btn btn-primary spin-btn" id="spinBtn" type="button">转一下</button>
+
+      <div class="filter-footer">
+        <span class="hint" id="excludedHint">还没排除任何菜</span>
+        <button class="btn btn-ghost btn-small" id="clearExcluded" type="button">清空排除</button>
+      </div>
+      <p class="message" id="filterMessage"></p>
+    </section>
+
+    <section class="card panel-result">
+      <div class="wheel-stage">
+        <span class="wheel-pointer" aria-hidden="true"></span>
+        <div class="wheel" id="wheel"><span class="wheel-label">吃啥</span></div>
+      </div>
+
+      <div class="result-empty" id="resultEmpty">
+        <strong>先设条件，再按“转一下”</strong>
+        系统会跳过最近吃过的、正在歇业的窗口，再按评分和热度加权抽签。
+      </div>
+
+      <article class="result-card hidden" id="resultCard">
+        <div class="result-topline">
+          <div>
+            <h2 class="result-name" id="resultName"></h2>
+            <p class="result-meta" id="resultMeta"></p>
+          </div>
+          <div class="result-price" id="resultPrice"></div>
+        </div>
+        <div class="result-tags" id="resultTags"></div>
+        <p class="result-meta" id="resultRating"></p>
+        <p class="result-reason" id="resultReason"></p>
+        <div class="alt-list" id="resultAlternatives"></div>
+        <div class="result-actions">
+          <button class="btn btn-primary btn-small" id="rerollBtn" type="button">再抽一次（排除这个）</button>
+          <a class="btn btn-ghost btn-small" href="#vote-panel">拉同学投票</a>
+        </div>
+
+        <form class="review-form" id="reviewForm">
+          <div class="section-head" style="margin-bottom:0">
+            <h3>给这道菜打个分</h3>
+            <span class="hint" id="reviewHint">同一道菜每天一条</span>
+          </div>
+          <div class="review-row">
+            <div>
+              <span class="field-label">评分</span>
+              <div class="rating-select" id="ratingStars">
+                <button class="star-btn" type="button" data-rating="1" aria-pressed="false" title="1 星">★</button>
+                <button class="star-btn" type="button" data-rating="2" aria-pressed="false" title="2 星">★</button>
+                <button class="star-btn" type="button" data-rating="3" aria-pressed="false" title="3 星">★</button>
+                <button class="star-btn" type="button" data-rating="4" aria-pressed="false" title="4 星">★</button>
+                <button class="star-btn" type="button" data-rating="5" aria-pressed="true" title="5 星">★</button>
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="reviewAuthor">昵称</label>
+              <input id="reviewAuthor" type="text" maxlength="20" value="匿名同学">
+            </div>
+          </div>
+          <div class="field" style="margin:0">
+            <label for="reviewComment">评论（可选）</label>
+            <textarea id="reviewComment" maxlength="200" placeholder="分量、口味、排队时间……"></textarea>
+          </div>
+          <div class="form-actions" style="display:flex;gap:10px;align-items:center">
+            <button class="btn btn-primary btn-small" type="submit">提交评价</button>
+            <span class="message" id="reviewMessage"></span>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <section class="card panel-history">
+      <div class="section-head">
+        <h2>最近抽过</h2>
+        <span class="hint">最新 8 条</span>
+      </div>
+      <div class="history-list" id="historyList"><p class="hint">还没抽过。</p></div>
+    </section>
+
+    <section class="card panel-vote" id="vote-panel">
+      <div class="section-head">
+        <h2>拉同学投票</h2>
+        <span class="hint">适合决定聚餐地点</span>
+      </div>
+      <div class="vote-grid">
+        <div class="stack">
+          <div class="field">
+            <label for="voteTitle">标题</label>
+            <input id="voteTitle" type="text" maxlength="40" value="周五聚餐去哪">
+          </div>
+          <div class="field">
+            <label for="voteMinutes">时长</label>
+            <select id="voteMinutes">
+              <option value="10">10 分钟</option>
+              <option value="30" selected>30 分钟</option>
+              <option value="60">1 小时</option>
+              <option value="120">2 小时</option>
+              <option value="1440">1 天</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="voteCreator">发起人</label>
+            <input id="voteCreator" type="text" maxlength="20" value="匿名同学">
+          </div>
+        </div>
+        <div>
+          <span class="field-label">候选地点（2–8 个）</span>
+          <div class="vote-venues" id="voteVenues"></div>
+        </div>
+      </div>
+      <div class="form-actions" style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn btn-primary btn-small" id="createVoteBtn" type="button">生成投票链接</button>
+        <span class="message" id="voteMessage"></span>
+      </div>
+      <div class="share-box hidden" id="shareBox">
+        <input id="shareLink" type="text" readonly>
+        <button class="btn btn-small" id="copyLinkBtn" type="button">复制</button>
+        <a class="btn btn-ghost btn-small" id="openLink" href="#">打开</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

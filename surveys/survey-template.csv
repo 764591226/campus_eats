@@ -1,0 +1,4 @@
+venue_id,campus_id,venue_name,venue_kind,location,open_periods,venue_tags,dish_id,dish_name,category,price_fen,dish_tags,description,source,available
+nh_survey_1,nh,南湖食堂一楼,CANTEEN,南湖·一楼,BREAKFAST;LUNCH;DINNER,大众菜,nh_survey_tomato,番茄炒蛋盖饭,RICE,1200,素;清淡,家常味,SURVEY,1
+nh_survey_1,nh,南湖食堂一楼,CANTEEN,南湖·一楼,BREAKFAST;LUNCH;DINNER,大众菜,nh_survey_chicken,黄焖鸡米饭,RICE,1500,招牌;微辣;肉,汤汁拌饭,SURVEY,1
+nh_survey_2,nh,南湖风味窗口,WINDOW,南湖食堂内,LUNCH;DINNER,风味,nh_survey_noodle,酸汤肥牛面,NOODLE,1600,酸辣;肉,现煮,SURVEY,1

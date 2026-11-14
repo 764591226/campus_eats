@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理后台 · 今天吃什么</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🧾</div>
+      <div>
+        <h1>管理后台</h1>
+        <p>维护菜品与窗口 · 查看数据 · 管理评价</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="/">回到抽签</a>
+    </nav>
+  </header>
+
+  <main class="page admin-grid">
+    <div class="admin-col">
+      <section class="card">
+        <div class="section-head">
+          <h2>数据看板</h2>
+          <span class="hint">全部时间 · 全部校区</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-label">抽签次数</div><div class="stat-value" id="statDecisions">0</div></div>
+          <div class="stat"><div class="stat-label">评价条数</div><div class="stat-value" id="statReviews">0</div></div>
+          <div class="stat"><div class="stat-label">平均评分</div><div class="stat-value" id="statRating">—</div></div>
+          <div class="stat"><div class="stat-label">投票房间</div><div class="stat-value" id="statRooms">0</div></div>
+          <div class="stat"><div class="stat-label">投票人次</div><div class="stat-value" id="statBallots">0</div></div>
+        </div>
+        <div class="top-list" id="topDishes"></div>
+        <div class="operator-bar" style="margin-top:14px">
+          <span>操作人</span>
+          <input id="operator" type="text" maxlength="20" value="管理员">
+          <span>所有增改操作都要填</span>
+        </div>
+        <p class="message" id="adminMessage"></p>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>菜品管理</h2>
+          <button class="btn btn-ghost btn-small" id="refreshDishes" type="button">刷新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>菜品</th><th>地点</th><th>价格</th><th>分类</th><th>来源</th><th>状态</th><th></th></tr>
+            </thead>
+            <tbody id="dishesBody"></tbody>
+          </table>
+        </div>
+        <p class="hint" style="margin-top:10px">“下架”后不会出现在抽签和公开列表里，历史记录保留。</p>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>最近评价</h2>
+          <button class="btn btn-ghost btn-small" id="refreshReviews" type="button">刷新</button>
+        </div>
+        <div class="stack" id="adminReviews"></div>
+        <p class="message" id="reviewMessage"></p>
+      </section>
+    </div>
+
+    <div class="admin-col">
+      <section class="card">
+        <div class="section-head"><h2>添加 / 修改菜品</h2><span class="hint">按 ID 覆盖</span></div>
+        <div class="form-grid">
+          <div class="field"><label for="dishId">菜品 ID</label><input id="dishId" type="text" maxlength="64" placeholder="如 nh_new_noodle"></div>
+          <div class="field"><label for="dishName">菜名</label><input id="dishName" type="text" maxlength="40" placeholder="如 酸汤肥牛面"></div>
+          <div class="field"><label for="dishVenue">所在窗口 / 食堂</label><select id="dishVenue"></select></div>
+          <div class="field"><label for="dishCategory">分类</label>
+            <select id="dishCategory">
+              <option value="RICE">盖饭</option>
+              <option value="NOODLE">面食</option>
+              <option value="SNACK">小吃</option>
+              <option value="SET">套餐</option>
+              <option value="DRINK">饮品</option>
+              <option value="OTHER">其他</option>
+            </select>
+          </div>
+          <div class="field"><label for="dishPrice">价格（元）</label><input id="dishPrice" type="number" min="0" max="1000" step="0.5" value="12"></div>
+          <div class="field"><label for="dishSource">数据来源</label>
+            <select id="dishSource">
+              <option value="DEMO">演示</option>
+              <option value="SURVEY">线下调研</option>
+              <option value="TAKEOUT">外卖样例</option>
+            </select>
+          </div>
+          <div class="field full"><label for="dishTags">标签（逗号分隔）</label><input id="dishTags" type="text" maxlength="100" placeholder="辣, 招牌, 肉"></div>
+          <div class="field full"><label for="dishDesc">描述</label><input id="dishDesc" type="text" maxlength="120" placeholder="一句话介绍"></div>
+          <label class="check full"><input type="checkbox" id="dishAvailable" checked> 当前可售</label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-small" id="addDishBtn" type="button">保存菜品</button>
+          <span class="message" id="dishMessage"></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head"><h2>添加 / 修改窗口</h2><span class="hint">按 ID 覆盖</span></div>
+        <div class="form-grid">
+          <div class="field"><label for="venueId">窗口 ID</label><input id="venueId" type="text" maxlength="64" placeholder="如 nh_new_window"></div>
+          <div class="field"><label for="venueName">名称</label><input id="venueName" type="text" maxlength="40" placeholder="如 南湖·风味窗口"></div>
+          <div class="field"><label for="venueCampus">校区</label><select id="venueCampus"></select></div>
+          <div class="field"><label for="venueKind">类型</label>
+            <select id="venueKind">
+              <option value="CANTEEN">食堂</option>
+              <option value="WINDOW">窗口</option>
+              <option value="TAKEOUT">外卖</option>
+            </select>
+          </div>
+          <div class="field full"><label for="venueLocation">位置</label><input id="venueLocation" type="text" maxlength="60" placeholder="如 南湖食堂内东侧"></div>
+          <div class="field full">
+            <span class="field-label">营业时段</span>
+            <div class="periods">
+              <label class="check"><input type="checkbox" class="period" value="BREAKFAST"> 早餐</label>
+              <label class="check"><input type="checkbox" class="period" value="LUNCH" checked> 午餐</label>
+              <label class="check"><input type="checkbox" class="period" value="DINNER" checked> 晚餐</label>
+              <label class="check"><input type="checkbox" class="period" value="LATE_NIGHT"> 夜宵</label>
+            </div>
+          </div>
+          <div class="field full"><label for="venueTags">标签（逗号分隔）</label><input id="venueTags" type="text" maxlength="100" placeholder="经济, 面食"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-small" id="addVenueBtn" type="button">保存窗口</button>
+          <span class="message" id="venueMessage"></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head"><h2>怎么用</h2></div>
+        <p class="hint">
+          菜品数据的真实来源是线下调研（docs/07）。先把 CSV 按模板整理好，
+          运行 <code>python tools/import_survey.py 文件.csv</code> 批量导入；
+          临时调整就用手边的表单。演示数据会标注“演示”，答辩时便于说明。
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/admin.js"></script>
+</body>
+</html>

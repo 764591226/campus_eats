@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>聚餐投票 · 今天吃什么</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🗳️</div>
+      <div>
+        <h1>聚餐投票</h1>
+        <p>每个人一票，可以改票；到点自动截止</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="/">回到抽签</a>
+    </nav>
+  </header>
+
+  <main class="page" style="max-width:760px">
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2 id="roomTitle">加载中……</h2>
+          <p class="result-meta" id="roomMeta"></p>
+        </div>
+        <span class="badge" id="roomStatus">…</span>
+      </div>
+
+      <p class="result-reason hidden" id="winnerBox"></p>
+      <div class="stack" id="voteOptions" style="margin-top:14px"></div>
+
+      <p class="message" id="voteMessage"></p>
+
+      <div class="filter-footer" style="margin-top:18px">
+        <span class="hint" id="voteTotal"></span>
+        <button class="btn btn-ghost btn-small" id="refreshBtn" type="button">刷新</button>
+      </div>
+
+      <div class="operator-bar" style="margin-top:14px">
+        <span>结束投票</span>
+        <input id="operator" type="text" maxlength="20" value="发起人">
+        <button class="btn btn-danger btn-small" id="closeBtn" type="button">结束</button>
+        <span class="hint">截止前也可以手动结束</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/vote.js"></script>
+</body>
+</html>
