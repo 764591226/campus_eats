@@ -26,7 +26,23 @@
       <section class="card">
         <div class="section-head">
           <h2>数据看板</h2>
-          <span class="hint">全部时间 · 全部校区</span>
+          <span class="hint" id="statScope">全部时间 · 全部校区</span>
+        </div>
+        <div class="stat-filters">
+          <div class="field">
+            <label for="statCampus">校区</label>
+            <select id="statCampus"><option value="">全部校区</option></select>
+          </div>
+          <div class="field">
+            <label for="statRange">时间范围</label>
+            <select id="statRange">
+              <option value="">全部时间</option>
+              <option value="today">今天</option>
+              <option value="7">近 7 天</option>
+              <option value="30">近 30 天</option>
+            </select>
+          </div>
+          <button class="btn btn-ghost btn-small" id="refreshStats" type="button">刷新看板</button>
         </div>
         <div class="stat-grid">
           <div class="stat"><div class="stat-label">抽签次数</div><div class="stat-value" id="statDecisions">0</div></div>
@@ -41,7 +57,7 @@
           <input id="operator" type="text" maxlength="20" value="管理员">
           <span>所有增改操作都要填</span>
         </div>
-        <p class="message" id="adminMessage"></p>
+        <p class="message" id="adminMessage" role="status" aria-live="polite"></p>
       </section>
 
       <section class="card">
@@ -51,6 +67,7 @@
         </div>
         <div class="table-wrap">
           <table>
+            <caption class="sr-only">菜品列表，可编辑或上下架</caption>
             <thead>
               <tr><th>菜品</th><th>地点</th><th>价格</th><th>分类</th><th>来源</th><th>状态</th><th></th></tr>
             </thead>
@@ -58,6 +75,24 @@
           </table>
         </div>
         <p class="hint" style="margin-top:10px">“下架”后不会出现在抽签和公开列表里，历史记录保留。</p>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>窗口 / 食堂管理</h2>
+          <button class="btn btn-ghost btn-small" id="refreshVenues" type="button">刷新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <caption class="sr-only">窗口与食堂列表，可编辑</caption>
+            <thead>
+              <tr><th>名称</th><th>校区</th><th>类型</th><th>位置</th><th>营业时段</th><th></th></tr>
+            </thead>
+            <tbody id="venuesBody"></tbody>
+          </table>
+        </div>
+        <p class="message" id="venueListMessage" role="status" aria-live="polite"></p>
+        <p class="hint">修改窗口后，菜品表单里的地点下拉框会同步刷新。</p>
       </section>
 
       <section class="card">
@@ -72,7 +107,11 @@
 
     <div class="admin-col">
       <section class="card">
-        <div class="section-head"><h2>添加 / 修改菜品</h2><span class="hint">按 ID 覆盖</span></div>
+        <div class="section-head"><h2 id="dishFormTitle">添加 / 修改菜品</h2><span class="hint" id="dishFormHint">按 ID 覆盖</span></div>
+        <p class="editing-note hidden" id="dishEditingNote" role="status">
+          正在编辑：<strong id="dishEditingName"></strong>
+          <button class="btn btn-ghost btn-small" id="cancelDishEdit" type="button">取消编辑</button>
+        </p>
         <div class="form-grid">
           <div class="field"><label for="dishId">菜品 ID</label><input id="dishId" type="text" maxlength="64" placeholder="如 nh_new_noodle"></div>
           <div class="field"><label for="dishName">菜名</label><input id="dishName" type="text" maxlength="40" placeholder="如 酸汤肥牛面"></div>
@@ -101,12 +140,17 @@
         </div>
         <div class="form-actions">
           <button class="btn btn-primary btn-small" id="addDishBtn" type="button">保存菜品</button>
-          <span class="message" id="dishMessage"></span>
+          <button class="btn btn-ghost btn-small" id="resetDishBtn" type="button">清空表单</button>
+          <span class="message" id="dishMessage" role="status" aria-live="polite"></span>
         </div>
       </section>
 
       <section class="card">
-        <div class="section-head"><h2>添加 / 修改窗口</h2><span class="hint">按 ID 覆盖</span></div>
+        <div class="section-head"><h2 id="venueFormTitle">添加 / 修改窗口</h2><span class="hint" id="venueFormHint">按 ID 覆盖</span></div>
+        <p class="editing-note hidden" id="venueEditingNote" role="status">
+          正在编辑：<strong id="venueEditingName"></strong>
+          <button class="btn btn-ghost btn-small" id="cancelVenueEdit" type="button">取消编辑</button>
+        </p>
         <div class="form-grid">
           <div class="field"><label for="venueId">窗口 ID</label><input id="venueId" type="text" maxlength="64" placeholder="如 nh_new_window"></div>
           <div class="field"><label for="venueName">名称</label><input id="venueName" type="text" maxlength="40" placeholder="如 南湖·风味窗口"></div>
@@ -132,7 +176,8 @@
         </div>
         <div class="form-actions">
           <button class="btn btn-primary btn-small" id="addVenueBtn" type="button">保存窗口</button>
-          <span class="message" id="venueMessage"></span>
+          <button class="btn btn-ghost btn-small" id="resetVenueBtn" type="button">清空表单</button>
+          <span class="message" id="venueMessage" role="status" aria-live="polite"></span>
         </div>
       </section>
 

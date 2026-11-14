@@ -11,8 +11,8 @@ from pathlib import Path
 
 from flask import Blueprint, Flask, jsonify, request, send_from_directory
 
-from campus_eats.model import (CampusError, DishCategory, ErrorCode,
-                               MealPeriod, VenueKind)
+from campus_eats.model import (CampusError, DecisionMode, DishCategory,
+                               ErrorCode, MealPeriod, VenueKind)
 from campus_eats.model.errors import HTTP_STATUS
 from campus_eats.model.serialize import (dish_from_dict, filters_from_dict,
                                          to_jsonable, venue_from_dict,
@@ -106,10 +106,11 @@ def create_app(system: System) -> Flask:
     # ---------------- 元数据 ----------------
     @api.get("/meta")
     def meta():
-        tags = sorted({tag for dish in s.repo.list_dishes() for tag in dish.tags})
-        categories = sorted({dish.category.value for dish in s.repo.list_dishes()})
+        dishes = s.catalog.list_dishes(include_unavailable=True)
+        tags = sorted({tag for dish in dishes for tag in dish.tags})
+        categories = sorted({dish.category.value for dish in dishes})
         return ok({
-            "campuses": s.repo.list_campuses(),
+            "campuses": s.catalog.list_campuses(),
             "venue_kinds": [x.value for x in VenueKind],
             "meal_periods": [x.value for x in MealPeriod],
             "categories": categories,
@@ -154,7 +155,6 @@ def create_app(system: System) -> Flask:
     def decide():
         data = body()
         mode = (data.get("mode") or "WHEEL")
-        from campus_eats.model import DecisionMode
         return ok(s.decision.decide(filters_from_dict(data.get("filters")),
                                     enum_arg(DecisionMode, mode, "mode")), 201)
 

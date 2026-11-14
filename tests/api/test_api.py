@@ -148,6 +148,22 @@ def test_admin_endpoints(client):
     assert client.get("/api/admin/popular").status_code == 200
 
 
+def test_admin_summary_filters(client, clock):
+    resp = client.post("/api/decisions", json={
+        "filters": {"campus_id": "nh", "categories": ["DRINK"]},
+    })
+    assert resp.status_code == 201
+
+    nh = client.get("/api/admin/summary?campus_id=nh").get_json()
+    assert nh["decision_count"] == 1
+    ms = client.get("/api/admin/summary?campus_id=ms").get_json()
+    assert ms["decision_count"] == 0
+    future = clock.now_ms() + 1
+    after = client.get(f"/api/admin/summary?since_ms={future}").get_json()
+    assert after["decision_count"] == 0
+    assert client.get("/api/admin/summary?campus_id=nope").status_code == 400
+
+
 def test_admin_delete_review(client):
     resp = client.post("/api/reviews", json={
         "dish_id": "nh_main_sour_noodle", "rating": 3, "comment": "待删",

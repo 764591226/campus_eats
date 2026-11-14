@@ -13,6 +13,53 @@
   gap: 10px;
 }
 
+.stat-filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.stat-filters .field {
+  margin: 0;
+  flex: 1 1 140px;
+  min-width: 130px;
+}
+
+.stat-filters .btn { margin-bottom: 1px; }
+
+.editing-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.editing-note strong { color: var(--ink); }
+
+.empty-cell {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+input.readonly {
+  background: var(--surface);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.table-wrap tr:hover td {
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+}
+
 .stat {
   background: var(--surface-2);
   border: 1px solid var(--line);
